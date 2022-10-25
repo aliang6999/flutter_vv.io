@@ -1,0 +1,34 @@
+name: flutter_vv
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    name: flutter_vv
+    env:
+      my_secret: ${{secrets.flutter_vv_secret}}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: "dev"
+      - run: flutter config --enable-web
+      - run: flutter pub get
+      - run: flutter build web --release
+      - run: |
+          cd build/web
+          git init
+          # type configurations: your user.email and user.name followed lines 
+          # git config --global user.email your_email 
+          # git config --global user.name your_name 
+          git config --global user.email aliang6999@gmail.com
+          git config --global user.name aliang6999
+          git status
+          # change this remote url for examle your remote url is https://github.com/onatcipli/flutter_web.git then the following:
+          git remote add origin https://${{secrets.flutter_vv_secret}}@github.com/aliang6999/flutter_vv.io.git
+          git checkout -b gh-pages
+          git add --all
+          git commit -m "update"
+          git push origin gh-pages -f
